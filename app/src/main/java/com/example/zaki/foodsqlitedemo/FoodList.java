@@ -29,6 +29,8 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
+import static com.example.zaki.foodsqlitedemo.MainActivity.sqLiteHelper;
+
 /**
  * Created by acer on 9/12/2017.
  */
@@ -38,6 +40,9 @@ public class FoodList extends AppCompatActivity {
     GridView gridview;
     ArrayList<Food> list;
     FoodListAdapter adapter = null;
+    EditText edtName, edtPrice;
+    ImageView imageView;
+
 
 
     @Override
@@ -51,7 +56,7 @@ public class FoodList extends AppCompatActivity {
         gridview.setAdapter(adapter);
 
         // get all data from sqlite
-        Cursor cursor = MainActivity.sqLiteHelper.getData("SELECT * FROM FOOD");
+        Cursor cursor = sqLiteHelper.getData("SELECT * FROM FOOD");
         list.clear();
         while (cursor.moveToNext()) {
             int id = cursor.getInt (0);
@@ -62,7 +67,8 @@ public class FoodList extends AppCompatActivity {
             list.add(new Food(name, price, image, id));
         }
         adapter.notifyDataSetChanged();
-        gridview.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+        gridview.setOnItemLongClickListener(
+                new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
                 CharSequence[] items = {"Update", "Delete"};
@@ -74,13 +80,14 @@ public class FoodList extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int item) {
                       if (item==0) {
                           // update
-                        Cursor c = MainActivity.sqLiteHelper.getData("SELECT id FROM FOOD");
+                        Cursor c = sqLiteHelper.getData("SELECT id FROM FOOD");
                           ArrayList<Integer> arrID = new ArrayList<Integer>();
                           while(c.moveToNext()){
                               arrID.add(c.getInt(0));
                           }
                         // show dialog update at here
                           showDialogUpdate(FoodList.this, arrID.get(position));
+                      // updateFoodList();
                       } else{
                           //delete
                           Toast.makeText(getApplicationContext(),"Delete..", Toast.LENGTH_SHORT).show();
@@ -104,12 +111,17 @@ public class FoodList extends AppCompatActivity {
         final EditText edtPrice = (EditText) dialog.findViewById(R.id.edtPrice);
         Button btnUpdate = (Button) dialog.findViewById(R.id.btnUpdate);
 
+
+
         //set width for dialog
         int width = (int) (activity.getResources().getDisplayMetrics().widthPixels * 0.95);
         //set height for dialog
         int height = (int) (activity.getResources().getDisplayMetrics().heightPixels * 0.7);
         dialog.getWindow().setLayout(width, height);
         dialog.show();
+
+        //edtName.setHint("MACAM2");
+        //edtPrice.setText("Berapa harga");
 
         imageViewFood.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -124,11 +136,12 @@ public class FoodList extends AppCompatActivity {
             }
         });
 
+       // final EditText finalEdtName = edtName;
         btnUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 try {
-                    MainActivity.sqLiteHelper.updateData(
+                    sqLiteHelper.updateData(
                             edtName.getText().toString().trim(),
                             edtPrice.getText().toString().trim(),
                             MainActivity.imageViewToByte(imageViewFood),
@@ -136,7 +149,7 @@ public class FoodList extends AppCompatActivity {
 
                     );
                     dialog.dismiss();
-                    Toast.makeText(getApplicationContext(), "Update successfully!!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Update successfully", Toast.LENGTH_SHORT).show();
                 } catch (Exception error) {
                     Log.e("Update error: ", error.getMessage());
                 }
@@ -147,7 +160,7 @@ public class FoodList extends AppCompatActivity {
     }
 
     private void updateFoodList(){
-        Cursor cursor = MainActivity.sqLiteHelper.getData("SELECT * FROM FOOD");
+        Cursor cursor = sqLiteHelper.getData("SELECT * FROM FOOD");
         list.clear();
         while (cursor.moveToNext()) {
             int id = cursor.getInt (0);

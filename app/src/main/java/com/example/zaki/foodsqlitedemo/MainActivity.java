@@ -9,8 +9,10 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.graphics.BitmapCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -18,7 +20,9 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 //import java.util.stream.Stream;
 
@@ -83,12 +87,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static byte[] imageViewToByte(ImageView image) {
+
+        int MAX_IMAGE_SIZE = 3000 * 1024;
         Bitmap bitmap = ((BitmapDrawable) image.getDrawable()).getBitmap();
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-       // boolean compress = bitmap.compress(Bitmap.CompressFormat.JPEG, 100, Stream);
+        int bitmapByteCount= BitmapCompat.getAllocationByteCount(bitmap);
+        if ((bitmapByteCount >= MAX_IMAGE_SIZE)) {
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+            }
+        else{
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+            }
         byte[] byteArray = stream.toByteArray();
         return byteArray;
+
+
     }
 
     @Override
