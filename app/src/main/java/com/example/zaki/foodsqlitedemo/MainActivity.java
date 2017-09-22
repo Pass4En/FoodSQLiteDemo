@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
         int bitmapByteCount= BitmapCompat.getAllocationByteCount(bitmap);
         if ((bitmapByteCount >= MAX_IMAGE_SIZE)) {
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-            int i;
+            int ii;
             }
         else{
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
